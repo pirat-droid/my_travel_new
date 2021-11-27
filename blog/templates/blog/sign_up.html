@@ -1,0 +1,30 @@
+{% extends 'blog/base.html' %}
+{% block content %}
+<div class="container-lg container-sm">
+    <div class="row">
+        <div class="col">
+            <h1>Регистрация</h1>
+            {% if form.errors %}
+            <p>{{ error }}</p>
+            {% endif %}
+            <form method="post">
+                {% csrf_token %}
+                {% for field in form %}
+                <div class="mb-3">
+                    <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
+                    {{ field }}
+                    <div class="row-form-errors">{{ field.errors }}</div>
+                </div>
+                {% endfor %}
+                <div class="mb-3 form-check">
+                    <input type="checkbox" class="form-check-input" id="exampleCheck1">
+                    <label class="form-check-label" for="exampleCheck1">Согласте на обработку персональных
+                        данных</label>
+                </div>
+                <button type="submit" class="btn btn-primary">Регистрация</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

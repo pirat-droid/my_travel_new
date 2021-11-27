@@ -1,0 +1,40 @@
+{% extends 'blog/base.html' %}
+{% load static %}
+{% block content %}
+    <div class="container-lg container-sm">
+        <div class="row">
+            <div class="col">
+                {{ message }}
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="exampleInputEmail1" class="form-label">Электронная почта</label>
+                        {{ form.email }}
+                    </div>
+                    <div class="mb-3">
+                        <label for="exampleInputSex" class="form-label">Пол</label>
+                        {{ form.sex }}
+                    </div>
+                    <div class="mb-3">
+                        <label for="exampleInputCountry" class="form-label">Страна</label>
+                        {{ form.country }}
+                    </div>
+                    <div class="mb-3">
+                        <div class="mb-3">
+                            <label for="exampleInputBirthday" class="form-label">День рождения</label>
+                            {{ form.birthday }}
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <div class="mb-3">
+                            <img src="{{ user.avatar.url }}">
+                            <label for="formFile" class="form-label">Выберите новый аватар</label>
+                            {{ form.avatar }}
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Изменить</button>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,45 @@
+{% extends 'blog/base.html' %}
+{% block content %}
+{% load l10n %}
+<div class="row">
+    <div class="col col-map">
+        <h1>Моя карта воспоминаний</h1>
+        <div id="map"></div>
+
+    </div>
+</div>
+
+<script>
+    ymaps.ready(init);
+
+    function init() {
+        var myMap = new ymaps.Map('map', {
+            center: [55.751574, 37.573856],
+            zoom: 9,
+        }, {
+            searchControlProvider: 'yandex#search'
+        });
+        myMap.geoObjects
+        {% for post in posts %}
+            .add(new ymaps.Placemark([{{ post.lon|unlocalize }}, {{ post.lat|unlocalize }}], {
+        // Зададим содержимое заголовка балуна.
+        balloonContentHeader: '<a href = "{{ post.get_absolute_url }}">{{ post.title }}</a><br>',
+        // Зададим содержимое основной части балуна.
+        balloonContentBody:
+        {% with image=post.imagepostmodel_set.all|first %}
+            {% if image %}
+                '<img src="{{ image.image.url }}" height="50%" width="50%"> <br/> ' +
+            {% endif %}
+        {% endwith %}
+            '<p>{{ post.text|truncatechars:35 }}</p>',
+        // Зададим содержимое нижней части балуна.
+        balloonContentFooter: 'Теги: {% for tag in post.tag.all %} {{ tag }} {% endfor %}',
+        // Зададим содержимое всплывающей подсказки.
+        hintContent: '{% for tag in post.tag.all %} {{ tag }} {% endfor %}',
+        iconCaption: '{{ post.title }}'
+    }))
+        {% endfor %}
+
+    }
+</script>
+{% endblock %}

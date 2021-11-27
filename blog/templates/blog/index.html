@@ -1,0 +1,70 @@
+{% extends 'blog/base.html' %}
+{% block content %}
+{% load l10n %}
+<div class="row">
+    <div class="col col-map">
+        <h1>Моя карта воспоминаний</h1>
+        <div id="map"></div>
+    </div>
+</div>
+<div class="row">
+    <div id="point-menu"></div>
+</div>
+
+<script>
+    ymaps.ready(init);
+
+    function init() {
+            var items = [
+                {% for post in posts %}
+                {
+                    center: [{{ post.lon|unlocalize }}, {{ post.lat|unlocalize }}],
+                    name: "<a href = '{{ post.get_absolute_url }}'>{{ post.title }}</a><br>",
+                    icon: "{{ post.title }}",
+                    tag: "Теги: {% for tag in post.tag.all %} {{ tag }} {% endfor %}",
+                    image: "{% with image=post.imagepostmodel_set.all|first %} {% if image %} <img src='{{ image.image.url }}' height='50%' width='50%'> <br/> {% endif %} {% endwith %} <p>{{ post.text|truncatechars:30 }}</p>"
+                },
+                {% endfor %}
+            ]
+
+        var myMap = new ymaps.Map('map', {
+            center: [55.751574, 37.573856],
+            zoom: 9,
+        }, {
+            searchControlProvider: 'yandex#search'
+        });
+
+        menu = $('<ol class="menu list-counter-square">');
+
+        for (var i = 0, l = items.length; i < l; i++) {
+            createMenu(items[i]);
+         }
+
+        function createMenu (item) {
+            var menuItem = $('<li><a class="name-post" href="#">' + item.icon + '</a></li>'),
+                collection = new ymaps.Placemark(item.center, { balloonContentHeader: item.name,
+                                                                balloonContentBody: item.image,
+                                                                balloonContentFooter: item.tag,
+                                                                hintContent: item.tag,
+                                                                iconCaption: item.icon
+                                                                });
+            // submenu = $('<ol class="list-counter-square"></ol>');
+            myMap.geoObjects.add(collection);
+            menuItem
+                // .append(submenu)
+                .appendTo(menu)
+                .find('a')
+                .bind('click', function () {
+                    if (!collection.balloon.isOpen()) {
+                        collection.balloon.open();
+                    } else {
+                        collection.balloon.close();
+                    }
+                    return false;
+                });
+
+        }
+    menu.appendTo('#point-menu');
+    }
+</script>
+{% endblock %}
